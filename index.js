@@ -5,6 +5,7 @@ const grantAccessContainer = document.querySelector(".grant-location-container")
 const searchForm = document.querySelector("[data-searchForm]");
 const loadingScreen = document.querySelector(".loading-container");
 const userInfoContainer = document.querySelector(".user-info-container");
+const notFound = document.querySelector(".notFound");
 
 
 // To track the current open tab
@@ -31,6 +32,7 @@ function switchTab(clickedTab){
         }
         else{
             // clicked on userTab(your weather)
+            notFound.classList.remove("active");
             searchForm.classList.remove("active");
             userInfoContainer.classList.remove("active");
             // checking current session have user location coordinate (already stored or not)
@@ -79,6 +81,10 @@ async function fetchUserWeatherInfo(coordinates){
             `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
           );
         const data = await response.json();
+
+        if(data.cod !== 200) {
+            throw data.message;
+        }
 
         // REMOVING LOADER
         loadingScreen.classList.remove("active");
@@ -149,7 +155,12 @@ searchForm.addEventListener('submit',(e)=>{
         return;
     }
     else{
-        fetchSearchWeatherInfo(cityName);
+        try {
+            
+            fetchSearchWeatherInfo(cityName);
+        } catch (error) {
+         alert(error)  ; 
+        }
     }
 });
 
@@ -157,6 +168,7 @@ async function fetchSearchWeatherInfo(city){
     loadingScreen.classList.add("active");
     userInfoContainer.classList.remove("active");
     grantAccessContainer.classList.remove("active");
+    notFound.classList.remove("active");
 
     try{
         // fetching weather information using city name
@@ -165,10 +177,13 @@ async function fetchSearchWeatherInfo(city){
           );
         const data = await response.json();
         loadingScreen.classList.remove("active");
+        if(data.cod !== 200){
+            throw data.message;
+        }
         userInfoContainer.classList.add("active");
         renderWeatherInfo(data);
     }
     catch(err){
-        alert("Please Enter a valid city name");
+        notFound.classList.add("active");
     }
 }

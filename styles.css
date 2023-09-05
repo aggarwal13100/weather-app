@@ -85,6 +85,17 @@ h1{
     margin-bottom: 1.75rem;
     letter-spacing: 0.75px;
 }
+.notFound{
+    display: none;
+}
+.notFound.active{
+    display : flex;
+    justify-content : center;
+    align-items : center;
+}
+.notFoundImage{
+    width: 20vw;
+}
 
 .loading-container{
     display: none;
